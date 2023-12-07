@@ -44,7 +44,7 @@ userSchema.pre("save", async function (next) {
 });
 
 // userSchema me ek method banaya 'jwtToken' wo return krega Jwt.sign() // sign() payload, SECRET key, Buffer(expiry time) leta h
-userSchema.method = {
+userSchema.methods = {
   jwtToken() {
     return Jwt.sign(
         { id: this._id, email: this.email }, 
