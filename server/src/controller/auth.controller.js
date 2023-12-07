@@ -96,4 +96,46 @@ const login = async (req, res, next) => {
   }
 };
 
-export { signup, login };
+const getUser = async (req, res, next) => {
+  const userId = req.User.id; // jwtAuth se req.User mila tha usme id thi
+
+  try {
+    const user = await User.findById(userId); // password ke alawa jo bhi info h is userId me vo user me store ho jaegi
+
+    return res.status(200).json({
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: "BAD REQUEST",
+    });
+  }
+};
+
+const logout = async (req, res, next) => {
+  // * cookie me token hata do to fir logout ho jaega
+  // * cookie me se token nikal do yani null kr do
+
+  try {
+    const cookieOption = {
+      expires: new Date(), // current expiry date
+      httpOnly: true, //  not able to modify  the cookie in client side
+    };
+
+    res.cookie("token", null, cookieOption);
+
+    res.status(200).json({
+      success: true,
+      message: "Logged Out",
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export { signup, login, getUser, logout };
