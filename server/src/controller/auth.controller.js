@@ -52,6 +52,48 @@ const signup = async (req, res, next) => {
   }
 };
 
-const login = async (req, res, next) => {};
+const login = async (req, res, next) => {
+  const { email, password } = req.body;
+
+  if ((!email, !password)) {
+    return res.status(400).json({
+      success: false,
+      message: "email and password are required",
+    });
+  }
+
+  try {
+    const user = await User.findOne({ email }).select("+password"); // check if user exist or not
+
+    // check credentials
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid credentials",
+      });
+    }
+
+    // if credentials are true the
+    // create jwt token using userSchema( jwtToken() )
+    const token = user.jwtToken();
+    user.password = undefined;
+
+    const cookieOption = {
+      maxAge: 24 * 60 * 60 * 1000, //24hr
+      httpOnly: true, //  not able to modify  the cookie in client side
+    };
+
+    res.cookie("token", token, cookieOption); // set cookie
+    res.status(200).json({
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 export { signup, login };
