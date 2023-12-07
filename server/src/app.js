@@ -10,16 +10,17 @@ connectToDatabase();
 // application middlewares
 
 
-// import routing
+//*  routing
 import authRouter from './routes/auth.route.js'
+app.use('/api/auth', authRouter);
 
 
-
-
+// default route
 app.use("/", (req, res) => {
   res.status(200).json({
     data: "JWT AUTH SERVER",
   });
 });
+
 
 export default app;
